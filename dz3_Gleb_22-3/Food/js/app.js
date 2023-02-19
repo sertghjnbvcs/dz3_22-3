@@ -1,0 +1,135 @@
+const tabs = document.querySelectorAll('.tabheader__item')
+const tabsParent = document.querySelector('.tabheader__items')
+const tabContent = document.querySelectorAll('.tabcontent')
+
+const hideTabContent = () => {
+    tabContent.forEach(item => {
+        item.style.display = 'none'
+    })
+    tabs.forEach(item => {
+        item.classList.remove('tabheader__item_active')
+    })
+}
+
+const showTabContent = (i = 0) => {
+    tabContent[i].style.display = 'block'
+    tabs[i].classList.add('tabheader__item_active')
+}
+
+hideTabContent()
+showTabContent()
+let slider = 0
+function sliderAuto() {
+    setInterval(() => {
+        slider++
+        if (slider > 3) {
+            slider = 0
+        }
+        hideTabContent()
+        showTabContent(slider)
+    }, 2000)
+}
+sliderAuto()
+
+
+tabsParent.onclick = (event) => {
+    if (event.target.classList.contains('tabheader__item')) {
+        tabs.forEach((item, i) => {
+            if (event.target === item) {
+                hideTabContent()
+                showTabContent(i)
+            }
+        })
+    }
+}
+
+const modal = document.querySelector('.modal')
+const modalTrigger = document.querySelector('.btn_white')
+const modalTriggerDark = document.querySelector('.btn_dark')
+const closeModalBtn = document.querySelector('.modal__close')
+
+const openModal = () => {
+    modal.classList.add('show')
+    modal.classList.remove('hide')
+    document.body.style.overflow = 'hidden'
+}
+
+const closeModal = () => {
+    modal.classList.add('hide')
+    modal.classList.remove('show')
+    document.body.style.overflow = ''
+}
+
+modalTrigger.onclick = () => openModal()
+modalTriggerDark.onclick = () => openModal()
+closeModalBtn.onclick = () => closeModal()
+
+modal.onclick = event => event.target === modal ? closeModal() : false
+modal.onkeydown = event => event.code === 'Escape' ? closeModal() : false
+
+
+const scrollModal = () => {
+    const scroll = document.documentElement
+    if (scroll.scrollTop + scroll.clientHeight >= scroll.scrollHeight - 0.8) {
+        openModal()
+        document.body.style.overflow = 'hidden'
+    }
+}
+window.addEventListener('scroll', scrollModal)
+
+
+
+// data
+
+
+const deadline = '2023-02-17'
+
+
+function getTimeRemaining(deadline) {
+    const time = new Date(deadline) - new Date(),
+        days = Math.floor((time / (1000 * 60 * 60 * 24))),
+        hours = Math.floor((time / (1000 * 60 * 60) % 24)),
+        minutes = Math.floor((time / 1000 / 60) % 60),
+        seconds = Math.floor((time / 1000) % 60)
+
+    return {
+        'total': time,
+        'days': days,
+        'hours': hours,
+        'minutes': minutes,
+        'seconds': seconds
+    }
+}
+
+function setClock(element, deadline) {
+    const elem = document.querySelector(element),
+        days = elem.querySelector('#days'),
+        hours = elem.querySelector('#hours'),
+        minutes = elem.querySelector('#minutes'),
+        seconds = elem.querySelector('#seconds')
+
+    setInterval(updateClock, 1000)
+
+    updateClock()
+
+    function updateClock() {
+        const time = getTimeRemaining(deadline)
+        days.innerHTML = makeZero(time.days)
+        hours.innerHTML = makeZero(time.hours)
+        minutes.innerHTML = makeZero(time.minutes)
+        seconds.innerHTML = makeZero(time.seconds)
+    }
+
+    function makeZero(num) {
+        if (num >= 0 && num < 10) {
+            return `0${num}`
+        } else {
+            return num
+        }
+    }
+
+}
+
+setClock('.timer', deadline)
+
+
